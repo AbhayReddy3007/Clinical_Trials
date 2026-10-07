@@ -1,0 +1,47 @@
+Step 1 — Confirm Zscaler is actually intercepting this connection
+
+Open the failing URL in Chrome/Edge on this same laptop: https://api.platform.opentargets.org. Click the padlock → Certificate → look at the issuer.
+
+If the issuer is something like Zscaler Root CA / Zscaler Intermediate CA → confirmed, Zscaler is inspecting this traffic on this machine.
+If the issuer is a normal public CA (DigiCert, Let's Encrypt, etc.) → Zscaler isn't inspecting this specific host on this machine (maybe it's bypassed/allowlisted here), and the cause is something else — jump to Step 5.
+
+Step 2 — Check whether the Zscaler root cert is actually installed in Windows on this machine
+
+powershell
+Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*Zscaler*" }
+Get-ChildItem -Path Cert:\CurrentUser\Root | Where-Object { $_.Subject -like "*Zscaler*" }
+If nothing is returned on this laptop but a colleague's working machine does show it → this laptop's Zscaler agent never pushed/installed the root cert (reinstall or re-enroll the Zscaler client, or ask IT — this is the most common reason it's "this PC only").
+
+Step 3 — Check Python's trust store independently of Windows
+
+Python/requests doesn't use the Windows cert store — it uses certifi's bundle. Even if Step 2 passes, the cert may be missing from this bundle.
+
+powershell
+py -c "import certifi; print(certifi.where())"
+
+Open that file and search for Zscaler. If it's not in there, that's the exact root cause: Windows trusts Zscaler, Python doesn't.
+
+Compare against a working colleague's machine if you can — ask them to run the same two commands and see whether their certifi.where() file contains Zscaler or whether they instead have REQUESTS_CA_BUNDLE/SSL_CERT_FILE set in their environment:
+
+powershell
+echo $env:REQUESTS_CA_BUNDLE
+echo $env:SSL_CERT_FILE
+
+This is the most likely divergence: a working machine either had someone manually append the Zscaler cert to certifi, or has REQUESTS_CA_BUNDLE pointed at a company-provided combined bundle, and this machine never got that one-time setup step.
+
+Step 4 — Isolate it to Python, not the network/account
+
+Run from the exact same shell/venv:
+
+powershell
+curl.exe -v https://api.platform.opentargets.org
+
+curl.exe on Windows 10/11 uses the Windows (schannel) trust store, not certifi. If curl.exe succeeds but py fails, that proves definitively it's Python's isolated trust bundle missing the Zscaler CA — not a network, proxy, or Zscaler-policy problem, and not something IT needs to fix centrally (it's local to this Python environment).
+
+Step 5 — If Step 1 showed Zscaler is NOT intercepting this host
+
+Then compare Zscaler policy for this user/device vs. the working machine: in the Zscaler Client Connector app on this laptop (tray icon → right-click → look at app status / policy), check if it shows a different policy group, or if this device is enrolled under a different Zscaler location/tenant than the working one. Worth looping in IT here, since this would be a device-level Zscaler enrollment difference rather than something fixable from the Python side.
+
+Most likely verdict given your symptoms: this is almost certainly Step 2 or Step 3 — this specific laptop's venv/certifi bundle (or the Zscaler root cert install itself) never got the one-time fix that the other machine has, rather than anything wrong with the code or with Zscaler's policy generally.
+
+Once you run Steps 1–4 and tell me what you see (especially whether curl.exe succeeds and what's in the certifi.where() file), I can give you the exact one-line fix rather than a generic one.
