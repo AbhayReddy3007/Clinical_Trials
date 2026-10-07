@@ -1,56 +1,214 @@
-That confirms it. curl.exe uses the Windows system trust store (schannel) and connected fine with HTTP/1.1 200 OK — so Windows itself already trusts whatever's signing this connection (Zscaler's re-signed cert included). That rules out the network, Zscaler policy, and DNS entirely.
+aiohappyeyeballs              2.7.1
 
-So the root cause is narrowed to exactly one thing: Python's certifi bundle doesn't have the Zscaler root CA that Windows has. requests/grpc/urllib3 in Python ignore the Windows cert store by default and only trust whatever's in certifi's file — which is a fixed list of public CAs and has no path to add Zscaler's internal one automatically.
+aiohttp                       3.13.3
 
-To nail down the exact gap and fix it:
+aiosignal                     1.4.0
 
-1. Confirm certifi is the blind spot
+annotated-types               0.7.0
 
-powershell
-py -c "import certifi; print(certifi.where())"
+anthropic                     0.118.0
 
-Open that file in a text editor and search for Zscaler. It won't be there — that's the confirmed cause.
+anyio                         4.14.2
 
-2. Get the Zscaler root cert that Windows trusts, in PEM format
+asttokens                     3.0.2
 
-powershell
-# Export it straight from the Windows cert store
-$cert = Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*Zscaler*" }
-$cert | ForEach-Object {
-    $path = "C:\Temp\$($_.Thumbprint).cer"
-    Export-Certificate -Cert $_ -FilePath $path -Type CERT
-}
+attrs                         26.1.0
 
-This dumps the Zscaler root (and intermediate, if listed separately) as .cer files. If Get-ChildItem returns nothing from LocalMachine\Root, check CurrentUser\Root too — Zscaler sometimes installs per-user.
+beautifulsoup4                4.14.3
 
-3. Convert to PEM and append to a combined bundle (don't edit certifi's file directly — it gets overwritten on every pip install --upgrade certifi):
+certifi                       2026.1.4
 
-powershell
-certutil -encode C:\Temp\<thumbprint>.cer C:\Temp\zscaler.pem
-py -c "import certifi; print(certifi.where())"   # copy certifi's path
-copy "<certifi-path>" C:\Temp\combined-ca-bundle.pem
-Get-Content C:\Temp\zscaler.pem | Add-Content C:\Temp\combined-ca-bundle.pem
+cffi                          2.1.0
 
-4. Point Python at the combined bundle
+charset-normalizer            3.4.9
 
-powershell
-$env:REQUESTS_CA_BUNDLE = "C:\Temp\combined-ca-bundle.pem"
-$env:SSL_CERT_FILE = "C:\Temp\combined-ca-bundle.pem"
+colorama                      0.4.6
 
-Add these two lines to your venv's Activate.ps1 (or your PowerShell profile) so they're set automatically every time, not just this session.
+comm                          0.2.3
 
-5. Verify the fix
+contourpy                     1.3.3
 
-powershell
-py -c "import requests; print(requests.get('https://api.platform.opentargets.org').status_code)"
+cryptography                  49.0.0
 
-Should print 200 with no SSL error.
+cycler                        0.12.1
 
-Simpler alternative, if you'd rather not hand-manage certs: install pip-system-certs, which patches Python at import time to use the Windows certificate store (same one curl.exe/schannel uses) instead of certifi:
+db-dtypes                     1.7.1
 
-powershell
-py -m pip install pip-system-certs
+debugpy                       1.8.21
 
-Once installed, no env vars needed — Python automatically trusts whatever Windows trusts, which Step 1 already proved includes Zscaler's cert on this machine. This is usually the fastest fix and the reason it "just works" on other company laptops that happen to have something similar already set up (or that never hit this path because a prior IT image included it).
+distro                        1.9.0
 
-If pip-system-certs is blocked by policy or can't install (corporate proxy blocking PyPI), fall back to the manual combined-bundle approach in steps 1–4.
+docstring_parser              0.18.0
+
+et_xmlfile                    2.0.0
+
+executing                     2.2.1
+
+fonttools                     4.64.0
+
+frozenlist                    1.8.0
+
+google-api-core               2.33.0
+
+google-auth                   2.59.0
+
+google-auth-oauthlib          1.4.0
+
+google-cloud-bigquery         3.40.1
+
+google-cloud-bigquery-storage 2.36.2
+
+google-cloud-core             2.6.0
+
+google-cloud-storage          3.9.0
+
+google-crc32c                 1.8.0
+
+google-genai                  2.25.0
+
+google-resumable-media        2.10.0
+
+googleapis-common-protos      1.75.0
+
+grpcio                        1.82.1
+
+grpcio-status                 1.81.1
+
+h11                           0.16.0
+
+httpcore                      1.0.9
+
+httpx                         0.28.1
+
+idna                          3.18
+
+ipykernel                     7.3.0
+
+ipython                       9.16.1
+
+ipython_pygments_lexers       1.1.1
+
+jedi                          0.20.0
+
+jiter                         0.16.0
+
+json_repair                   0.59.4
+
+jupyter_client                8.9.1
+
+jupyter_core                  5.9.1
+
+kiwisolver                    1.5.1
+
+lxml                          6.1.3
+
+matplotlib                    3.11.1
+
+matplotlib-inline             0.2.2
+
+multidict                     6.7.1
+
+nest-asyncio2                 1.7.2
+
+numpy                         2.5.1
+
+oauthlib                      3.3.1
+
+openpyxl                      3.1.5
+
+packaging                     26.2
+
+pandas                        2.3.3
+
+pandas-gbq                    0.35.0
+
+parso                         0.8.7
+
+pillow                        12.3.0
+
+pip                           25.1.1
+
+platformdirs                  4.11.3
+
+prompt_toolkit                3.0.53
+
+propcache                     0.5.2
+
+proto-plus                    1.28.2
+
+protobuf                      6.33.6
+
+psutil                        7.2.2
+
+pure_eval                     0.2.3
+
+pyarrow                       25.0.0
+
+pyasn1                        0.6.4
+
+pyasn1_modules                0.4.2
+
+pycparser                     3.0
+
+pydantic                      2.13.4
+
+pydantic_core                 2.46.4
+
+pydata-google-auth            1.9.1
+
+Pygments                      2.21.0
+
+pymupdf                       1.28.2
+
+pyparsing                     3.3.2
+
+pypdf                         6.16.0
+
+python-dateutil               2.9.0.post0
+
+python-docx                   1.2.0
+
+python-dotenv                 1.1.0
+
+pytz                          2026.2
+
+pyzmq                         27.1.0
+
+reportlab                     4.4.10
+
+requests                      2.34.2
+
+requests-oauthlib             2.0.0
+
+seaborn                       0.13.2
+
+setuptools                    83.0.0
+
+six                           1.17.0
+
+sniffio                       1.3.1
+
+soupsieve                     2.9.2
+
+stack-data                    0.6.3
+
+tenacity                      9.1.4
+
+tornado                       6.5.8
+
+traitlets                     5.16.1
+
+typing_extensions             4.16.0
+
+typing-inspection             0.4.2
+
+tzdata                        2026.3
+
+urllib3                       2.7.0
+
+wcwidth                       0.8.2
+
+websockets                    16.1.1
+
+yarl                          1.24.5
+ 
