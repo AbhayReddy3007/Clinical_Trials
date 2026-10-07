@@ -1,1 +1,198 @@
+* Host api.platform.opentargets.org:443 was resolved.
 
+* IPv6: (none)
+
+* IPv4: 34.8.39.129
+
+*   Trying 34.8.39.129:443...
+
+* schannel: disabled automatic use of client certificate
+
+* ALPN: curl offers http/1.1
+
+* ALPN: server did not agree on a protocol. Uses default.
+
+* Connected to api.platform.opentargets.org (34.8.39.129) port 443
+
+* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: api.platform.opentargets.org
+> User-Agent: curl/8.13.0
+> Accept: */*
+> 
+
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Server: nginx/1.31.6
+< Date: Wed, 07 Oct 2026 06:32:44 GMT
+< Content-Type: text/html; charset=UTF-8
+< Content-Length: 3081
+< Vary: Origin
+< Via: 1.1 google
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+<
+ 
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>opentargets platform api</title>
+<link href="//fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Slab" rel="stylesheet">
+<link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
+<link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+ 
+    </head>
+<body>
+
+<style>
+
+      .endpoint {
+
+          border-width: 1px;
+
+          border-style: solid;
+
+          border-color: #acacac;
+
+          border-radius: 4px;
+
+          padding: 4px;
+
+          background-color: #ececec;
+
+      }
+
+      .tooltip {
+
+          position: relative;
+
+          display: inline-block;
+
+      }
+ 
+      .tooltip .tooltiptext {
+
+          visibility: hidden;
+
+          width: 140px;
+
+          background-color: #555;
+
+          color: #fff;
+
+          text-align: center;
+
+          border-radius: 6px;
+
+          padding: 5px;
+
+          position: absolute;
+
+          z-index: 1;
+
+          bottom: 150%;
+
+          left: 50%;
+
+          margin-left: -75px;
+
+          opacity: 0;
+
+          transition: opacity 0.3s;
+
+      }
+ 
+      .tooltip .tooltiptext::after {
+
+          content: "";
+
+          position: absolute;
+
+          top: 100%;
+
+          left: 50%;
+
+          margin-left: -5px;
+
+          border-width: 5px;
+
+          border-style: solid;
+
+          border-color: #555 transparent transparent transparent;
+
+      }
+ 
+      .tooltip:hover .tooltiptext {
+
+          visibility: visible;
+
+          opacity: 1;
+
+      }
+
+      .endpoint-container {
+
+          display: flex;
+
+          align-items: center;
+
+          gap: 5px;
+
+      }
+</style>
+<h1>Open Targets Platform API</h1>
+ 
+    <div class="endpoint-container">
+<p>GraphQL API endpoint URL:</p> <span class="endpoint" id="api-endpoint">...</span>
+<div class="tooltip">
+<button onclick="copy()" onmouseout="outFunc()">
+<span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+
+                Copy
+</button>
+</div>
+</div>
+<p>GraphQL endpoint <a href="/api/v4/graphql/schema">schema</a></p>
+<p>GraphQL endpoint <a href="/api/v4/graphql/browser">browser IDE GraphiQL</a></p>
+ 
+    <div style="position: absolute; bottom: 0 ">
+<p>Data: 26.09</p>
+<p>API: 26.9.0</p>
+</div>
+ 
+  <script>
+
+      var endpoint = window.location.protocol + '//' + window.location.host + '/api/v4/graphql';
+
+      document.getElementById("api-endpoint").innerText = endpoint;
+ 
+      function copy() {
+
+          var copyText = document.getElementById("api-endpoint");
+
+          navigator.clipboard.writeText(copyText.textContent);
+ 
+          var tooltip = document.getElementById("myTooltip");
+
+          tooltip.innerHTML = "Copied: " + copyText.textContent;
+
+      }
+ 
+      function outFunc() {
+
+          var tooltip = document.getElementById("myTooltip");
+
+          tooltip.innerHTML = "Copy to clipboard";
+
+      }
+</script>
+ 
+ 
+      <script src="/assets/javascripts/main.js" type="text/javascript"></script>
+</body>
+</html>
+ 
+* Connection #0 to host api.platform.opentargets.org left intact
+ 
