@@ -1,198 +1,56 @@
-* Host api.platform.opentargets.org:443 was resolved.
+That confirms it. curl.exe uses the Windows system trust store (schannel) and connected fine with HTTP/1.1 200 OK — so Windows itself already trusts whatever's signing this connection (Zscaler's re-signed cert included). That rules out the network, Zscaler policy, and DNS entirely.
 
-* IPv6: (none)
+So the root cause is narrowed to exactly one thing: Python's certifi bundle doesn't have the Zscaler root CA that Windows has. requests/grpc/urllib3 in Python ignore the Windows cert store by default and only trust whatever's in certifi's file — which is a fixed list of public CAs and has no path to add Zscaler's internal one automatically.
 
-* IPv4: 34.8.39.129
+To nail down the exact gap and fix it:
 
-*   Trying 34.8.39.129:443...
+1. Confirm certifi is the blind spot
 
-* schannel: disabled automatic use of client certificate
+powershell
+py -c "import certifi; print(certifi.where())"
 
-* ALPN: curl offers http/1.1
+Open that file in a text editor and search for Zscaler. It won't be there — that's the confirmed cause.
 
-* ALPN: server did not agree on a protocol. Uses default.
+2. Get the Zscaler root cert that Windows trusts, in PEM format
 
-* Connected to api.platform.opentargets.org (34.8.39.129) port 443
+powershell
+# Export it straight from the Windows cert store
+$cert = Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*Zscaler*" }
+$cert | ForEach-Object {
+    $path = "C:\Temp\$($_.Thumbprint).cer"
+    Export-Certificate -Cert $_ -FilePath $path -Type CERT
+}
 
-* using HTTP/1.x
-> GET / HTTP/1.1
-> Host: api.platform.opentargets.org
-> User-Agent: curl/8.13.0
-> Accept: */*
-> 
+This dumps the Zscaler root (and intermediate, if listed separately) as .cer files. If Get-ChildItem returns nothing from LocalMachine\Root, check CurrentUser\Root too — Zscaler sometimes installs per-user.
 
-* Request completely sent off
-< HTTP/1.1 200 OK
-< Server: nginx/1.31.6
-< Date: Wed, 07 Oct 2026 06:32:44 GMT
-< Content-Type: text/html; charset=UTF-8
-< Content-Length: 3081
-< Vary: Origin
-< Via: 1.1 google
-< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< X-Content-Type-Options: nosniff
-< Alt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-<
- 
- 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>opentargets platform api</title>
-<link href="//fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Slab" rel="stylesheet">
-<link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
-<link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
- 
-    </head>
-<body>
+3. Convert to PEM and append to a combined bundle (don't edit certifi's file directly — it gets overwritten on every pip install --upgrade certifi):
 
-<style>
+powershell
+certutil -encode C:\Temp\<thumbprint>.cer C:\Temp\zscaler.pem
+py -c "import certifi; print(certifi.where())"   # copy certifi's path
+copy "<certifi-path>" C:\Temp\combined-ca-bundle.pem
+Get-Content C:\Temp\zscaler.pem | Add-Content C:\Temp\combined-ca-bundle.pem
 
-      .endpoint {
+4. Point Python at the combined bundle
 
-          border-width: 1px;
+powershell
+$env:REQUESTS_CA_BUNDLE = "C:\Temp\combined-ca-bundle.pem"
+$env:SSL_CERT_FILE = "C:\Temp\combined-ca-bundle.pem"
 
-          border-style: solid;
+Add these two lines to your venv's Activate.ps1 (or your PowerShell profile) so they're set automatically every time, not just this session.
 
-          border-color: #acacac;
+5. Verify the fix
 
-          border-radius: 4px;
+powershell
+py -c "import requests; print(requests.get('https://api.platform.opentargets.org').status_code)"
 
-          padding: 4px;
+Should print 200 with no SSL error.
 
-          background-color: #ececec;
+Simpler alternative, if you'd rather not hand-manage certs: install pip-system-certs, which patches Python at import time to use the Windows certificate store (same one curl.exe/schannel uses) instead of certifi:
 
-      }
+powershell
+py -m pip install pip-system-certs
 
-      .tooltip {
+Once installed, no env vars needed — Python automatically trusts whatever Windows trusts, which Step 1 already proved includes Zscaler's cert on this machine. This is usually the fastest fix and the reason it "just works" on other company laptops that happen to have something similar already set up (or that never hit this path because a prior IT image included it).
 
-          position: relative;
-
-          display: inline-block;
-
-      }
- 
-      .tooltip .tooltiptext {
-
-          visibility: hidden;
-
-          width: 140px;
-
-          background-color: #555;
-
-          color: #fff;
-
-          text-align: center;
-
-          border-radius: 6px;
-
-          padding: 5px;
-
-          position: absolute;
-
-          z-index: 1;
-
-          bottom: 150%;
-
-          left: 50%;
-
-          margin-left: -75px;
-
-          opacity: 0;
-
-          transition: opacity 0.3s;
-
-      }
- 
-      .tooltip .tooltiptext::after {
-
-          content: "";
-
-          position: absolute;
-
-          top: 100%;
-
-          left: 50%;
-
-          margin-left: -5px;
-
-          border-width: 5px;
-
-          border-style: solid;
-
-          border-color: #555 transparent transparent transparent;
-
-      }
- 
-      .tooltip:hover .tooltiptext {
-
-          visibility: visible;
-
-          opacity: 1;
-
-      }
-
-      .endpoint-container {
-
-          display: flex;
-
-          align-items: center;
-
-          gap: 5px;
-
-      }
-</style>
-<h1>Open Targets Platform API</h1>
- 
-    <div class="endpoint-container">
-<p>GraphQL API endpoint URL:</p> <span class="endpoint" id="api-endpoint">...</span>
-<div class="tooltip">
-<button onclick="copy()" onmouseout="outFunc()">
-<span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
-
-                Copy
-</button>
-</div>
-</div>
-<p>GraphQL endpoint <a href="/api/v4/graphql/schema">schema</a></p>
-<p>GraphQL endpoint <a href="/api/v4/graphql/browser">browser IDE GraphiQL</a></p>
- 
-    <div style="position: absolute; bottom: 0 ">
-<p>Data: 26.09</p>
-<p>API: 26.9.0</p>
-</div>
- 
-  <script>
-
-      var endpoint = window.location.protocol + '//' + window.location.host + '/api/v4/graphql';
-
-      document.getElementById("api-endpoint").innerText = endpoint;
- 
-      function copy() {
-
-          var copyText = document.getElementById("api-endpoint");
-
-          navigator.clipboard.writeText(copyText.textContent);
- 
-          var tooltip = document.getElementById("myTooltip");
-
-          tooltip.innerHTML = "Copied: " + copyText.textContent;
-
-      }
- 
-      function outFunc() {
-
-          var tooltip = document.getElementById("myTooltip");
-
-          tooltip.innerHTML = "Copy to clipboard";
-
-      }
-</script>
- 
- 
-      <script src="/assets/javascripts/main.js" type="text/javascript"></script>
-</body>
-</html>
- 
-* Connection #0 to host api.platform.opentargets.org left intact
- 
+If pip-system-certs is blocked by policy or can't install (corporate proxy blocking PyPI), fall back to the manual combined-bundle approach in steps 1–4.
