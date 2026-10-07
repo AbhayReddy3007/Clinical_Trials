@@ -1,47 +1,324 @@
-Step 1 — Confirm Zscaler is actually intercepting this connection
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> openssl s_client -connect api.platform.opentargets.org:443 -showcerts
+CONNECTED(000001F4)
+depth=2 C = US, O = Google Trust Services LLC, CN = GTS Root R1
+verify return:1
+depth=1 C = US, O = Google Trust Services, CN = WR3
+verify return:1
+depth=0 CN = platform.opentargets.org
+verify return:1
+---
+Certificate chain
+ 0 s:CN = platform.opentargets.org
+   i:C = US, O = Google Trust Services, CN = WR3
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Oct  5 04:10:12 2026 GMT; NotAfter: Jan  3 05:04:45 2027 GMT
+-----BEGIN CERTIFICATE-----
+MIIFpDCCBIygAwIBAgIQEeEgQzd1pf0Kf9z2lSrnrzANBgkqhkiG9w0BAQsFADA7
+MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZpY2VzMQww
+CgYDVQQDEwNXUjMwHhcNMjYxMDA1MDQxMDEyWhcNMjcwMTAzMDUwNDQ1WjAjMSEw
+HwYDVQQDExhwbGF0Zm9ybS5vcGVudGFyZ2V0cy5vcmcwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDBu34/J9020in0NwMYdGXm2guYayEsp6TP+2XzmGZs
+GQbDcv8br/zxbZ35YPT17G4oREGWCtfc/yWEa7QbFA83VEaYAufu8j3mdQrNwV/Z
+f+Kq+U/1Y5PvLJbIeWp+vgTaorldEbn14LhOenT5GLRnQ4u+PUy4VUZXf2HrBUDS
+7jD8v4Mm7rJ4vpL8YaHGfTsqfNgWtKnYiVs+H/RKwrxZilqyY6hiaUuPcOt51Gyb
+8jxO+7JgihnsCOWWUxSTMbbTApHcJ6IMoagc197Ko4ciUXd0BkhiDInenF3Xflxw
+4g6i+/ZakEFwCLib1gsZ8kJyHNnLlw85Yeh/sv2daY9PAgMBAAGjggK6MIICtjAO
+BgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0TAQH/BAIw
+ADAdBgNVHQ4EFgQUD086lQd3Pxqm+Eoy7SWI7MM9iCcwHwYDVR0jBBgwFoAUx4H1
+/Y6I2QA8TWOiUDEkoM4j/iMwNQYIKwYBBQUHAQEEKTAnMCUGCCsGAQUFBzAChhlo
+dHRwOi8vaS5wa2kuZ29vZy93cjMuY3J0MIG2BgNVHREEga4wgauCGHBsYXRmb3Jt
+Lm9wZW50YXJnZXRzLm9yZ4Icd3d3LnBsYXRmb3JtLm9wZW50YXJnZXRzLm9yZ4Ic
+YXBpLnBsYXRmb3JtLm9wZW50YXJnZXRzLm9yZ4IbYWkucGxhdGZvcm0ub3BlbnRh
+cmdldHMub3JnghhnZW5ldGljcy5vcGVudGFyZ2V0cy5vcmeCHHd3dy5nZW5ldGlj
+cy5vcGVudGFyZ2V0cy5vcmcwEwYDVR0gBAwwCjAIBgZngQwBAgEwNgYDVR0fBC8w
+LTAroCmgJ4YlaHR0cDovL2MucGtpLmdvb2cvd3IzL2dIS2lCMmVBZDZFLmNybDCC
+AQIGCisGAQQB1nkCBAIEgfMEgfAA7gB1ANbVjanQF1Pzakqgx1dJAq/rx9ws04zZ
+92TIDIkZHp8CAAABoQp4N8AAAAQDAEYwRAIgZv2egPrp4TVOwlBrsaQSPGG7Le7a
+kQv4Wuo/gb2XKRsCICd5t6etAyxgGf72p7ty1NArfS/gfhGG3CSyOAktgiwPAHUA
+TGPcmOWcHauI9h6KPd6uj6tEozd7X5uUw/uhnPzBviYAAAGhCng3+gAABAMARjBE
+AiBIxrRprgMf2YiFY/u36Ll9BAkzZqysbCZ+m/te8P7j6gIgL6cQjidB/K2qyTQG
+2BIoJTggVTVkxbC1byAPxvHJUBAwDQYJKoZIhvcNAQELBQADggEBAEI9M+kTVFTI
+rWsgWjBUi4kNH7vGO1eieTeyYjQFTHqx3pCrGrNbGoR1xxR1cWJ2sHM4JIUjNTpG
+ybpsollXmgKKloOPnltvCMjnlnC7zz1/nCIYN++geVPK991wJk17zQkLVG98IGKQ
+bEjPqh66OgZMqRps+DKowEXysjerwmcun+OZxI7k4zh8EcJX8NfIqqn/3xCXUm7Q
+9ax7otcSVMtOes9oZ+4tD80uFFMIAG628dHsR0WVvt4UPP0bJvH0gGJhcPkLx+pR
+BeEFzsMJ7drb99nf4nHEskCBns6w/k+vuTaNk9JXXyyo7bz2Kxgh/rtUWEl5w2gQ
+uH2OVcwcfQg=
+-----END CERTIFICATE-----
+ 1 s:C = US, O = Google Trust Services, CN = WR3
+   i:C = US, O = Google Trust Services LLC, CN = GTS Root R1
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Dec 13 09:00:00 2023 GMT; NotAfter: Feb 20 14:00:00 2029 GMT
+-----BEGIN CERTIFICATE-----
+MIIFCzCCAvOgAwIBAgIQf/AFqRVo1jq8IoYWhKpLWjANBgkqhkiG9w0BAQsFADBH
+MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM
+QzEUMBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIw
+MTQwMDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNl
+cnZpY2VzMQwwCgYDVQQDEwNXUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCPNHWHr4RyFI0HEJFvA6zx1Ag1mhnymxiJNGyYj3rU3eoF6N4bfIxUErp5
+ivsYDQ18nPO9OOSoXsYzy0aJb0ag6TdjjdzM1ZdOMq17HSMFufV7SUOY0LxXx1N4
+GLHtp1SyfIa+8FRFvIe6mVkd9LjbAPuBT0YrYl6xOqUqFyOsor7FjuVe/XEefaS0
+I30EUrI00t+ZrIfGTFlf+OZPjnWSwrIwRpLQtg3H5Iln/z9UlCdl4wHISiyEL2Vf
+za1c/aatQVvcTD8XlpF9qdg8Uyoc0ObUd+ZDSsK3+Eiiza1jtSVrlnIdgUVvhmnE
+5OZ4TDHmoX+nAXMKh++HiXLM08WNAgMBAAGjgf4wgfswDgYDVR0PAQH/BAQDAgGG
+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBTHgfX9jojZADxNY6JQMSSgziP+IzAfBgNVHSMEGDAWgBTk
+rysmcRorSCeFL1JmLO/wiRNxPjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKG
+GGh0dHA6Ly9pLnBraS5nb29nL3IxLmNydDArBgNVHR8EJDAiMCCgHqAchhpodHRw
+Oi8vYy5wa2kuZ29vZy9yL3IxLmNybDATBgNVHSAEDDAKMAgGBmeBDAECATANBgkq
+hkiG9w0BAQsFAAOCAgEAnI1DlJQzSKcWbyXXrJSsgKMo6KG74TMqhsuTg67a0FX0
+2752+eiJb5YsOJc8DVOHalwpOvbuPdl5BuAEgIK4Va7l9j3J9M1/EjeWjGTM3Ros
+zmBJGu82oz6EWi5q75xeF+onJmh2Hm98a/yJAI/mODXq5LofYcQ9AffKP9ZMZu+Y
+wW+/qHqyX2JhaOntvl7i8S+l1Y8CcKEqM1NFK4s4EBYPRFjZDawOHX7fSchbSMVP
+n5Nu04lrU6xufuZqRosEQw2o0UAyzDoyA52NXzJTWr1G2FVg/0A9hdrQ/6fe9G31
+67zKxNqXErs6MpHttEouGbpm2ftzrmcvruYxTfxc4G2GwBi3LFLozNpy042gDfXB
+zDyn1staWsy7+QnzMlR59Fz6jBOk5R4LT+ma0+KjnfRhMh5T2ucm69HkvNQtDZlV
+a1tLUlzs0zLEdQSehTCjZ6SYsGt2bMVK6dvtxzcyCP0QDUFnNXCwgw12+mGSkAuj
+4ORi8kMRpnL8UEjkNbdw9KL1eYbEC3D0GPue2Yk2AGhxkmcdm1BoOp05kYw/Nnqg
+h7QV8DKyBTUHbjH0pXlLiOsSOY+CLh1eTM+Do6rSjqGnDQeUXylZmPCmuveaw38I
+VnBaa6Eiz6pngZ1u6OeO/1UzfhmyTm0n0G+9JZ3KS2Mq08isNgXHLnhlHJaphpE=
+-----END CERTIFICATE-----
+ 2 s:C = US, O = Google Trust Services LLC, CN = GTS Root R1
+   i:C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+   a:PKEY: rsaEncryption, 4096 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Jun 19 00:00:42 2020 GMT; NotAfter: Jan 28 00:00:42 2028 GMT
+-----BEGIN CERTIFICATE-----
+MIIFYjCCBEqgAwIBAgIQd70NbNs2+RrqIQ/E8FjTDTANBgkqhkiG9w0BAQsFADBX
+MQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTEQMA4GA1UE
+CxMHUm9vdCBDQTEbMBkGA1UEAxMSR2xvYmFsU2lnbiBSb290IENBMB4XDTIwMDYx
+OTAwMDA0MloXDTI4MDEyODAwMDA0MlowRzELMAkGA1UEBhMCVVMxIjAgBgNVBAoT
+GUdvb2dsZSBUcnVzdCBTZXJ2aWNlcyBMTEMxFDASBgNVBAMTC0dUUyBSb290IFIx
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAthECix7joXebO9y/lD63
+ladAPKH9gvl9MgaCcfb2jH/76Nu8ai6Xl6OMS/kr9rH5zoQdsfnFl97vufKj6bwS
+iV6nqlKr+CMny6SxnGPb15l+8Ape62im9MZaRw1NEDPjTrETo8gYbEvs/AmQ351k
+KSUjB6G00j0uYODP0gmHu81I8E3CwnqIiru6z1kZ1q+PsAewnjHxgsHA3y6mbWwZ
+DrXYfiYaRQM9sHmklCitD38m5agI/pboPGiUU+6DOogrFZYJsuB6jC511pzrp1Zk
+j5ZPaK49l8KEj8C8QMALXL32h7M1bKwYUH+E4EzNktMg6TO8UpmvMrUpsyUqtEj5
+cuHKZPfmghCN6J3Cioj6OGaK/GP5Afl4/Xtcd/p2h/rs37EOeZVXtL0m79YB0esW
+CruOC7XFxYpVq9Os6pFLKcwZpDIlTirxZUTQAs6qzkm06p98g7BAe+dDq6dso499
+iYH6TKX/1Y7DzkvgtdizjkXPdsDtQCv9Uw+wp9U7DbGKogPeMa3Md+pvez7W35Ei
+Eua++tgy/BBjFFFy3l3WFpO9KWgz7zpm7AeKJt8T11dleCfeXkkUAKIAf5qoIbap
+sZWwpbkNFhHax2xIPEDgfg1azVY80ZcFuctL7TlLnMQ/0lUTbiSw1nH69MG6zO0b
+9f6BQdgAmD06yK56mDcYBZUCAwEAAaOCATgwggE0MA4GA1UdDwEB/wQEAwIBhjAP
+BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTkrysmcRorSCeFL1JmLO/wiRNxPjAf
+BgNVHSMEGDAWgBRge2YaRQ2XyolQL30EzTSo//z9SzBgBggrBgEFBQcBAQRUMFIw
+JQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3NwLnBraS5nb29nL2dzcjEwKQYIKwYBBQUH
+MAKGHWh0dHA6Ly9wa2kuZ29vZy9nc3IxL2dzcjEuY3J0MDIGA1UdHwQrMCkwJ6Al
+oCOGIWh0dHA6Ly9jcmwucGtpLmdvb2cvZ3NyMS9nc3IxLmNybDA7BgNVHSAENDAy
+MAgGBmeBDAECATAIBgZngQwBAgIwDQYLKwYBBAHWeQIFAwIwDQYLKwYBBAHWeQIF
+AwMwDQYJKoZIhvcNAQELBQADggEBADSkHrEoo9C0dhemMXoh6dFSPsjbdBZBiLg9
+NR3t5P+T4Vxfq7vqfM/b5A3Ri1fyJm9bvhdGaJQ3b2t6yMAYN/olUazsaL+yyEn9
+WprKASOshIArAoyZl+tJaox118fessmXn1hIVw41oeQa1v1vg4Fv74zPl6/AhSrw
+9U5pCZEt4Wi4wStz6dTZ/CLANx8LZh1J7QJVj2fhMtfTJr9w4z30Z209fOU0iOMy
++qduBmpvvYuR7hZL6Dupszfnw0Skfths18dG9ZKb59UhvmaSGZRVbNQpsg3BZlvi
+d0lIKO2d1xozclOzgjXPYovJJIultzkMu34qQb9Sz/yilrbCgj8=
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=CN = platform.opentargets.org
+issuer=C = US, O = Google Trust Services, CN = WR3
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 4629 bytes and written 414 bytes
+Verification: OK
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 0 (ok)
+---
+read:errno=10054
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> Get-Process -Name "ZSAService","ZSATray","ZSATunnel" -ErrorAction SilentlyContinue
 
-Open the failing URL in Chrome/Edge on this same laptop: https://api.platform.opentargets.org. Click the padlock → Certificate → look at the issuer.
+Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName                                   
+-------  ------    -----      -----     ------     --  -- -----------                                   
+    373      18     5524      20972              6936   0 ZSAService                                    
+   1003      50   432128     107088      44.64   4180   1 ZSATray                                       
+   1256     154    46476      59880              8728   0 ZSATunnel                                     
 
-If the issuer is something like Zscaler Root CA / Zscaler Intermediate CA → confirmed, Zscaler is inspecting this traffic on this machine.
-If the issuer is a normal public CA (DigiCert, Let's Encrypt, etc.) → Zscaler isn't inspecting this specific host on this machine (maybe it's bypassed/allowlisted here), and the cause is something else — jump to Step 5.
 
-Step 2 — Check whether the Zscaler root cert is actually installed in Windows on this machine
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*Zscaler*" }
 
-powershell
-Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Subject -like "*Zscaler*" }
-Get-ChildItem -Path Cert:\CurrentUser\Root | Where-Object { $_.Subject -like "*Zscaler*" }
-If nothing is returned on this laptop but a colleague's working machine does show it → this laptop's Zscaler agent never pushed/installed the root cert (reinstall or re-enroll the Zscaler client, or ask IT — this is the most common reason it's "this PC only").
 
-Step 3 — Check Python's trust store independently of Windows
+   PSParentPath: Microsoft.PowerShell.Security\Certificate::LocalMachine\Root
 
-Python/requests doesn't use the Windows cert store — it uses certifi's bundle. Even if Step 2 passes, the cert may be missing from this bundle.
+Thumbprint                                Subject                                                       
+----------                                -------                                                       
+0D23EE8F0F0560B9F68F2437C526D3CDF1FAF0C5  E=support@zscaler.com, CN=Zscaler Root CA, OU=Zscaler Inc.,...
 
-powershell
-py -c "import certifi; print(certifi.where())"
 
-Open that file and search for Zscaler. If it's not in there, that's the exact root cause: Windows trusts Zscaler, Python doesn't.
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> Get-ChildItem -Path Cert:\CurrentUser\Root | Where-Object { $_.Subject -like "*Zscaler*" }
 
-Compare against a working colleague's machine if you can — ask them to run the same two commands and see whether their certifi.where() file contains Zscaler or whether they instead have REQUESTS_CA_BUNDLE/SSL_CERT_FILE set in their environment:
 
-powershell
-echo $env:REQUESTS_CA_BUNDLE
-echo $env:SSL_CERT_FILE
+   PSParentPath: Microsoft.PowerShell.Security\Certificate::CurrentUser\Root
 
-This is the most likely divergence: a working machine either had someone manually append the Zscaler cert to certifi, or has REQUESTS_CA_BUNDLE pointed at a company-provided combined bundle, and this machine never got that one-time setup step.
+Thumbprint                                Subject                                                       
+----------                                -------                                                       
+0D23EE8F0F0560B9F68F2437C526D3CDF1FAF0C5  E=support@zscaler.com, CN=Zscaler Root CA, OU=Zscaler Inc.,...
 
-Step 4 — Isolate it to Python, not the network/account
 
-Run from the exact same shell/venv:
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> py -c "import certifi; print(certifi.where())"
+py : The term 'py' is not recognized as the name of a cmdlet, function, script file, or operable 
+program. Check the spelling of the name, or if a path was included, verify that the path is correct and 
+try again.
+At line:1 char:1
++ py -c "import certifi; print(certifi.where())"
++ ~~
+    + CategoryInfo          : ObjectNotFound: (py:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> python -c "import certifi; print(certifi.where())"
+C:\ProgramData\anaconda3\Lib\site-packages\certifi\cacert.pem
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> echo $env:REQUESTS_CA_BUNDLE
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> echo $env:SSL_CERT_FILE
+C:\ProgramData\anaconda3\Library\ssl\cacert.pem
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> curl.exe -v https://api.platform.opentargets.org
+* Host api.platform.opentargets.org:443 was resolved.
+* IPv6: (none)
+* IPv4: 34.8.39.129
+*   Trying 34.8.39.129:443...
+* schannel: disabled automatic use of client certificate
+* ALPN: curl offers http/1.1
+* ALPN: server accepted http/1.1
+* Established connection to api.platform.opentargets.org (34.8.39.129 port 443) from 192.168.1.14 port 62193 
+* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: api.platform.opentargets.org
+> User-Agent: curl/8.16.0
+> Accept: */*
+> 
+* Request completely sent off
+* schannel: remote party requests renegotiation
+* schannel: renegotiating SSL/TLS connection
+* schannel: SSL/TLS connection renegotiated
+< HTTP/1.1 200 OK
+< Server: nginx/1.31.6
+< Date: Wed, 07 Oct 2026 06:07:27 GMT
+< Content-Type: text/html; charset=UTF-8
+< Content-Length: 3081
+< Vary: Origin
+< Via: 1.1 google
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< Alt-Svc: h3=":443"; ma=2592000
+< 
 
-powershell
-curl.exe -v https://api.platform.opentargets.org
 
-curl.exe on Windows 10/11 uses the Windows (schannel) trust store, not certifi. If curl.exe succeeds but py fails, that proves definitively it's Python's isolated trust bundle missing the Zscaler CA — not a network, proxy, or Zscaler-policy problem, and not something IT needs to fix centrally (it's local to this Python environment).
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+        <title>opentargets platform api</title>
+        <link href="//fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Slab" rel="stylesheet">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
+        <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
 
-Step 5 — If Step 1 showed Zscaler is NOT intercepting this host
+    </head>
+    <body>
+        
+        
+  <style>
+      .endpoint {
+          border-width: 1px;
+          border-style: solid;
+          border-color: #acacac;
+          border-radius: 4px;
+          padding: 4px;
+          background-color: #ececec;
+      }
+      .tooltip {
+          position: relative;
+          display: inline-block;
+      }
 
-Then compare Zscaler policy for this user/device vs. the working machine: in the Zscaler Client Connector app on this laptop (tray icon → right-click → look at app status / policy), check if it shows a different policy group, or if this device is enrolled under a different Zscaler location/tenant than the working one. Worth looping in IT here, since this would be a device-level Zscaler enrollment difference rather than something fixable from the Python side.
+      .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 140px;
+          background-color: #555;
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 5px;
+          position: absolute;
+          z-index: 1;
+          bottom: 150%;
+          left: 50%;
+          margin-left: -75px;
+          opacity: 0;
+          transition: opacity 0.3s;
+      }
 
-Most likely verdict given your symptoms: this is almost certainly Step 2 or Step 3 — this specific laptop's venv/certifi bundle (or the Zscaler root cert install itself) never got the one-time fix that the other machine has, rather than anything wrong with the code or with Zscaler's policy generally.
+      .tooltip .tooltiptext::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: #555 transparent transparent transparent;
+      }
 
-Once you run Steps 1–4 and tell me what you see (especially whether curl.exe succeeds and what's in the certifi.where() file), I can give you the exact one-line fix rather than a generic one.
+      .tooltip:hover .tooltiptext {
+          visibility: visible;
+          opacity: 1;
+      }
+      .endpoint-container {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+      }
+  </style>
+    <h1>Open Targets Platform API</h1>
+
+    <div class="endpoint-container">
+        <p>GraphQL API endpoint URL:</p> <span class="endpoint" id="api-endpoint">...</span>
+        <div class="tooltip">
+            <button onclick="copy()" onmouseout="outFunc()">
+                <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+                Copy
+            </button>
+        </div>
+    </div>
+    <p>GraphQL endpoint <a href="/api/v4/graphql/schema">schema</a></p>
+    <p>GraphQL endpoint <a href="/api/v4/graphql/browser">browser IDE GraphiQL</a></p>
+
+    <div style="position: absolute; bottom: 0 ">
+        <p>Data: 26.09</p>
+        <p>API: 26.9.0</p>
+    </div>
+
+  <script>
+      var endpoint = window.location.protocol + '//' + window.location.host + '/api/v4/graphql';
+      document.getElementById("api-endpoint").innerText = endpoint;
+
+      function copy() {
+          var copyText = document.getElementById("api-endpoint");
+          navigator.clipboard.writeText(copyText.textContent);
+
+          var tooltip = document.getElementById("myTooltip");
+          tooltip.innerHTML = "Copied: " + copyText.textContent;
+      }
+
+      function outFunc() {
+          var tooltip = document.getElementById("myTooltip");
+          tooltip.innerHTML = "Copy to clipboard";
+      }
+  </script>
+
+
+
+      <script src="/assets/javascripts/main.js" type="text/javascript"></script>
+    </body>
+</html>
+
+* Connection #0 to host api.platform.opentargets.org:443 left intact
+(base) PS C:\Users\P90022569\Downloads\clinical_efficacy> 
